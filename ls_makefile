@@ -1,6 +1,0 @@
-all: ls_main
-
-
-ls_main: ls_main.c
-	
-gcc ls_main.c -o ls_main
