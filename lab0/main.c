@@ -67,10 +67,10 @@ void ls_l(char path[]){
             				case S_IFIFO: printf("p"); break; 
             				case S_IFLNK: printf("l"); break; 
             				case S_IFSOCK: printf("s"); break;
-            				default: break;
+            				default: printf("-"); break;
                 		}
 
-        			printf((_stat.st_mode & S_IRUSR) ? "r" : "-");
+        			printf((_stat.st_mode & S_IRUSR) ? " r" : " -");
         			printf((_stat.st_mode & S_IWUSR) ? "w" : "-");
         			printf((_stat.st_mode & S_IXUSR) ? "x" : "-");
         			printf((_stat.st_mode & S_IRGRP) ? "r" : "-");
