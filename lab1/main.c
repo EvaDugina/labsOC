@@ -36,7 +36,9 @@ int main(){
 			wait(&rv);	
 			printf(" --- PARENT - Код возврата потомка: %d\n", WEXITSTATUS(rv));
 			printf(" --- PARENT - И я умираю следом!\n");	
-	}	
+	}
+	
+	return 0;	
 
 }
 
