@@ -33,7 +33,7 @@ int isFlagsCorrect() {
 
 		case 6:
 			if ((flag3_1 == 'r' || flag3_1 == 'w' || flag3_1 == 'x') && (flag3_2 == 'r' || flag3_2 == 'w' || flag3_2 == 'x') && 
-				flag3_1 != flag3_2 && flag3_2 != flag3_3 && flag3_1 != flag3_3)
+				(flag3_3 == 'r' || flag3_3 == 'w' || flag3_3 == 'x') && flag3_1 != flag3_2 && flag3_2 != flag3_3 && flag3_1 != flag3_3)
 				return 1; 
 			break;
 
@@ -213,7 +213,7 @@ void _remove() {
 
 	if (result != 0)
 		printf("Ошибка прав доступа для файла '%s'!\n", f_path);
-	else 
+	else
 		printf("Права доступа для файла '%s' успешно изменены!\n", f_path);
 	
 }
@@ -232,6 +232,9 @@ int main(int argc, char **argv){
 	
 	if (argc == 3 && argv[1][0] == '-'){
 		count_flags = strlen(argv[1]);
+		if (argv[1][1] != 'u' && argv[1][1] != 'g' && argv[1][1] != 'o')
+			printf("ERROR! Некорректный ввод команды!\n");
+		
 		if (count_flags == 4){
 
 			flag1 = argv[1][1];
@@ -242,6 +245,9 @@ int main(int argc, char **argv){
 				_add();
 			else if (argv[1][2] == 'r')
 				_remove();
+				else
+				printf("ERROR! Некорректный ввод команды!\n");
+			
 		
 		} else if (count_flags == 5){
 			
@@ -254,6 +260,9 @@ int main(int argc, char **argv){
 				_add();
 			else if (argv[1][2] == 'r')
 				_remove();
+			else 
+				printf("ERROR! Некорректный ввод команды!\n");
+			
 			
 		} else if (count_flags == 6){
 			
@@ -267,10 +276,11 @@ int main(int argc, char **argv){
 				_add();
 			else if (argv[1][2] == 'r')
 				_remove();
-			
-		} else{
+			else
+				printf("ERROR! Некорректный ввод команды!\n");
+				
+		} else
 			printf("ERROR! Некорректный ввод команды!\n");
-		}
 		
 	} else if(argc == 2 && argv[1][0] == '-' && argv[1][1] == 'h' && strlen(argv[1]) == 2){
 		_help();
