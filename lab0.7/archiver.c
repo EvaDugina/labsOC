@@ -135,11 +135,14 @@ void _input(){
 
 	//printf("ИНФОРМАЦИЯ О ФАЙЛЕ: %s\n", str_info);
 	
-	char byte[1];
-	while(feof(f_input) == 0){
-		if(fread(byte, 1, 1, f_input) == 1)
-			fprintf(f_arch, "%c", byte[0]);
+	if (size != 0) {
+		char byte[1];
+		while(feof(f_input) == 0){
+			if(fread(byte, 1, 1, f_input) == 1)
+				fprintf(f_arch, "%c", byte[0]);
+		}
 	}
+
 	fclose(f_input);
 	fclose(f_arch);
 
@@ -221,18 +224,23 @@ void _extract(){
 	// Вырезаемый файл находится в начале
 	if(end_1part == 0 && start_2part != -1){
 		printf("Вырезать файл из начала:\n");	
-	
+			
 		char *s_part = (char *) malloc(sizeof(char *) * (size - start_2part));
 		
 		fseek(f_arch, start_2part, SEEK_CUR);
+
+		//if (buf_data_size == 0)
+			//fseek(f_arch, 2, SEEK_CUR);
+
 		fread(s_part, 1, size-start_2part, f_arch);
 		fclose(f_arch);
 		
+		
 		f_arch = fopen(arch_name, "w");
-		fprintf(f_arch, "%s", s_part);
+		fwrite(s_part, 1, strlen(s_part), f_arch);
 		printf("----------\nF_ARCHIVE:\n%s\n", s_part);
 
-		fprintf(f_new_file, "%s", buf_data);
+		fwrite(buf_data, 1, buf_data_size, f_new_file);
 		printf("----------\nIN NEW_FILE:\n%s", buf_data);
 		fclose(f_new_file);
 
@@ -249,10 +257,10 @@ void _extract(){
 		fclose(f_arch);
 			
 		f_arch = fopen(arch_name, "w");
-		fprintf(f_arch, "%s", f_part);
+		fwrite(f_part, 1, strlen(f_part), f_arch);
 		printf("----------\nF_ARCHIVE:\n%s", f_part);
 
-		fprintf(f_new_file, "%s", buf_data);
+		fwrite(buf_data, 1, buf_data_size, f_new_file);
 		printf("----------\nIN NEW_FILE:\n%s\n", buf_data);
 		fclose(f_new_file);
 		
@@ -267,6 +275,10 @@ void _extract(){
 
 		fread(f_part, 1, end_1part, f_arch);
 		fseek(f_arch, start_2part, SEEK_SET);
+		
+		//if (buf_data_size == 0)
+			//fseek(f_arch, 2, SEEK_CUR);
+
 		fread(s_part, 1, size-start_2part, f_arch);
 		fclose(f_arch);
 			
@@ -289,6 +301,8 @@ void _extract(){
 }
 
 void _stat(){
+
+
 	
 }
 
