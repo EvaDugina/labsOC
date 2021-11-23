@@ -9,6 +9,8 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
+#define FIFO_NAME "fifo"
+
 
 typedef struct data_struct {
 	time_t time;
@@ -29,28 +31,11 @@ char* timeToChar(int num){
 
 
 int main(int argc, char** argv){
-	
+
 	if (argc != 1) {
 		printf("ERROR! Incorrect data entry!");
 		return -1;
 	}
-
-	int fifo_fd = open("fifo.1", O_RDWR);
-	printf("%d\n", fifo_fd);
-	if (fifo_fd == -1) {
-		if (mkfifo("fifo.1", O_RDWR) == -1){
-				printf("ERROR!! mkfifo()\n");
-				return -1;
-		} 
-		printf("FILE CREATED!\n.");
-	} else
-		close(fifo_fd);
-
-	/*int fifo_fd;
-	if ((fifo_fd = open("temp/fifo.1", O_RDWR)) == -1){
-		printf("ERROR!! open()\n");
-		return -1;
-	}*/
 
 	pid_t pid;
 	switch(pid = fork()){
@@ -60,15 +45,16 @@ int main(int argc, char** argv){
 			return -1;
 		
 		case 0:
+			sleep(1);
 			printf("[CHILD]\n");
 			
-			int r_fifo;
-			if ((r_fifo = open("fifo.1", O_RDONLY)) < 0){
+			int r_fifo = open(FIFO_NAME, O_RDONLY);
+			if (r_fifo < 0){
 				printf("ERROR!! read & open()\n");
 				return -1;
 			}
 
-			while(wait(NULL) != pid);
+			sleep(5);
 
 			d_struct g_data;
 			read(r_fifo, &g_data, sizeof(d_struct));
@@ -77,11 +63,8 @@ int main(int argc, char** argv){
 			int p_hh = localtime(&g_data.time)->tm_hour;
 			int p_mm = localtime(&g_data.time)->tm_min;
 			int p_ss = localtime(&g_data.time)->tm_sec;
-		
-			sleep(5);
 			
-			time_t ch_time;
-			ch_time = time(NULL);
+			time_t ch_time = time(NULL);
 			int hh = localtime(&ch_time)->tm_hour;
 			int mm = localtime(&ch_time)->tm_min;
 			int ss = localtime(&ch_time)->tm_sec;
@@ -97,19 +80,27 @@ int main(int argc, char** argv){
 		default:
 			printf("[PARENT]\n");
 
-			int w_fifo;
-			if ((w_fifo = open("fifo.1", O_WRONLY)) < 0){
+			unlink(FIFO_NAME);
+			int fifo_fd = mkfifo(FIFO_NAME, 0777);
+			printf("%d\n", fifo_fd);
+			if (fifo_fd < 0) {
+				printf("ERROR!! mkfifo()\n");
+				return -1;
+			}
+			
+			int w_fifo = open(FIFO_NAME, O_WRONLY);
+			if (w_fifo < 0){
 				printf("ERROR!! write & open()\n");
 				return -1;
 			}
 			
-			time_t now_time;
-			now_time = time(NULL);
-
+			time_t now_time = time(NULL);
 			d_struct data = {now_time, pid};
 			
 			write(w_fifo, &data, sizeof(d_struct));
-			close(w_fifo);			
+			close(w_fifo);
+			
+			wait(0);			
 
 			return 0;
 	}	
