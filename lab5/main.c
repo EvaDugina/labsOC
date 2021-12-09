@@ -19,13 +19,11 @@ void* _write(){
 }
 
 void* _read(){
-	int i = 0;
-	while (i < 5) {
+	while (1) {
 		pthread_mutex_lock(&mutex);
 		printf("TID = %d\t\t||\tCOUNTER = %d\n", pthread_self(), counter);
 		pthread_mutex_unlock(&mutex);
 		sleep(1);
-		i += 1;
 	}
 	pthread_exit(NULL);
 }
