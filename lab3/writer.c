@@ -57,15 +57,13 @@ int main(int argc, char** argv){
 		d_struct data = {now_time, getpid()};
 				
 		*((d_struct*)ptr_to_shm) = data;
-		//memсpy(ptr_to_shm, data, sizeof(d_struct));
 
-		//sleep(4);
 		sleep(4);
 			
 		shmdt(ptr_to_shm);
 		shmctl(shmem_id, IPC_RMID, NULL);
 		
-		printf("----\n[WRITER]\nSended PID: %d\nSended TIME: %d\n\n", getpid(), now_time);
+		printf("----\n[WRITER]\nSended PID: %d\nSended TIME: %s\n", getpid(), ctime(&now_time));
 			
 	}	
 

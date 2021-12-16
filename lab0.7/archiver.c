@@ -270,7 +270,7 @@ void _extract(){
 
 	fclose(f_arch);
 
-	printf("File '%s' has been successfully unzipped!\n");
+	printf("File '%s' has been successfully unzipped!\n", filename);
 }
 
 void _stat(){

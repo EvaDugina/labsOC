@@ -35,49 +35,37 @@ char* timeToChar(int num){
 int main(int argc, char** argv){
 
 	sleep(1);
-	
-	//while (1){
 
-		key_t key = ftok(MEM_NAME, 1);
-		if (key < 0){
-			printf("[READER] ftok() failed with code: %d\n", errno);
-			return -1;
-		}
+	key_t key = ftok(MEM_NAME, 1);
+	if (key < 0){
+		printf("[READER] ftok() failed with code: %d\n", errno);
+		return -1;
+	}
 
-		int shmem_id = shmget(key, sizeof(d_struct), 0666);
-		if (shmem_id < 0) {
-			printf("ERROR!! shmget() failed with code: %d\n\n", errno);
-			return -1;
-		}
+	int shmem_id = shmget(key, sizeof(d_struct), 0666);
+	if (shmem_id < 0) {
+		printf("ERROR!! shmget() failed with code: %d\n\n", errno);
+		return -1;
+	}
 
-		void* ptr_to_shm = shmat(shmem_id, NULL, 0);
-		if (ptr_to_shm == (void*)-1){
-			printf("ERROR!! shmat() failed with code: %d\n\n", errno);
-			return -1;
-		}
+	void* ptr_to_shm = shmat(shmem_id, NULL, 0);
+	if (ptr_to_shm == (void*)-1){
+		printf("ERROR!! shmat() failed with code: %d\n\n", errno);
+		return -1;
+	}
 			
-		sleep(2);
+	sleep(2);
 		
-		d_struct g_data = *((d_struct*)ptr_to_shm);
-		
-		int p_hh = localtime(&g_data.time)->tm_hour;
-		int p_mm = localtime(&g_data.time)->tm_min;
-		int p_ss = localtime(&g_data.time)->tm_sec;
+	d_struct g_data = *((d_struct*)ptr_to_shm);
 			
-		time_t ch_time = time(NULL);
-		int hh = localtime(&ch_time)->tm_hour;
-		int mm = localtime(&ch_time)->tm_min;
-		int ss = localtime(&ch_time)->tm_sec;
+	time_t ch_time = time(NULL);
 			
-		printf("----\nPARENT PID = %d\n", g_data.pid);
-		printf("PARENT TIME = %s::%s::%s\n", timeToChar(p_hh), timeToChar(p_mm), timeToChar(p_ss));
-		printf("CHILD TIME = %s::%s::%s\n\n", timeToChar(hh), timeToChar(mm), timeToChar(ss));
+	printf("----\nPARENT PID = %d\n", g_data.pid);
+	printf("PARENT TIME = %s", ctime(&g_data.time));
+	printf("CHILD TIME = %s", ctime(&ch_time));
 
 				
-		shmdt(ptr_to_shm);
-		//shmctl(shmem_id, IPC_RMID, NULL);
-				
-	//}	
+	shmdt(ptr_to_shm);
 
 	return 0;
 }

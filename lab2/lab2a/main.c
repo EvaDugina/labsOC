@@ -8,6 +8,12 @@
 #include <sys/wait.h>
 
 
+typedef struct data_struct {
+	time_t time;
+	pid_t pid;
+} d_struct;
+
+
 char* timeToChar(int num){
 	char* time = (char*) malloc(2);
 	if (num < 10){
@@ -18,7 +24,6 @@ char* timeToChar(int num){
 	sprintf(time, "%d", num);
 	return time;
 }
-
 
 int main(int argc, char** argv){
 
@@ -41,19 +46,17 @@ int main(int argc, char** argv){
 		case 0:
 			printf("[CHILD]\n");
 			
-			time_t p_time; 
-			pid_t p_pid;
+			sleep(5);
+			
+			d_struct g_data;
 			
 			close(pipefd[1]);
-			read(pipefd[0], &p_time, sizeof(time_t));
-			read(pipefd[0], &p_pid, sizeof(pid_t));
+			read(pipefd[0], &g_data, sizeof(d_struct));
 			close(pipefd[0]);
 
-			int p_hh = localtime(&p_time)->tm_hour;
-			int p_mm = localtime(&p_time)->tm_min;
-			int p_ss = localtime(&p_time)->tm_sec;
-		
-			sleep(5);
+			int p_hh = localtime(&g_data.time)->tm_hour;
+			int p_mm = localtime(&g_data.time)->tm_min;
+			int p_ss = localtime(&g_data.time)->tm_sec;
 			
 			time_t ch_time;
 			ch_time = time(NULL);
@@ -61,7 +64,7 @@ int main(int argc, char** argv){
 			int mm = localtime(&ch_time)->tm_min;
 			int ss = localtime(&ch_time)->tm_sec;
 			
-			printf("PARENT PID = %d\n", p_pid);
+			printf("PARENT PID = %d\n", g_data.pid);
 			printf("PARENT TIME = %s::%s::%s\n", timeToChar(p_hh), timeToChar(p_mm), timeToChar(p_ss));
 			printf("CHILD TIME = %s::%s::%s\n", timeToChar(hh), timeToChar(mm), timeToChar(ss));
 	
@@ -69,13 +72,13 @@ int main(int argc, char** argv){
 			
 		default:
 			printf("[PARENT]\n");
-
+			
 			time_t now_time;
 			now_time = time(NULL);
+			d_struct data = {now_time, pid};
 			
 			close(pipefd[0]);
-			write(pipefd[1], &now_time, sizeof(time_t));
-			write(pipefd[1], &pid, sizeof(pid_t));
+			write(pipefd[1], &data, sizeof(d_struct));
 			close(pipefd[1]);
 						
 			printf("PID и ВРЕМЯ успешно переданы ребёнку.\n");
