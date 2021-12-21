@@ -10,7 +10,7 @@ pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER;
 void* _write(){
 	int i = 0;
 	while (i < 5) {
-		pthread_rwlock_trywrlock(&rwlock);
+		pthread_rwlock_wrlock(&rwlock);
 		counter += 1;
 		pthread_rwlock_unlock(&rwlock);
 		i += 1;
@@ -21,7 +21,7 @@ void* _write(){
 void* _read(){
 	int i = 0;
 	while (i < 5) {
-		pthread_rwlock_tryrdlock(&rwlock);
+		pthread_rwlock_rdlock(&rwlock);
 		printf("TID = %x\t\t||\tCOUNTER = %d\n", pthread_self(), counter);
 		pthread_rwlock_unlock(&rwlock);
 		i++;
